@@ -1,0 +1,5 @@
+[{"rank": "J", "suit": "heart"},
+ {"suit": "club", "rank":5},
+ {"suit": "spade", "rank": 8},
+ {"suit": "diamond", "rank":9},
+ {"suit": "heart", "rank":"A"}]
