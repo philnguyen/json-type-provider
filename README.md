@@ -36,7 +36,7 @@ for each declared `id` type, whose RHS describes the shape of the data
 and optionally how it is mapped into a custom Racket type.
 ```racket
 (define-json-types
-  [id type-desc] ...)
+  [id desc] ...)
 ```
 
 Below is the full grammar:
