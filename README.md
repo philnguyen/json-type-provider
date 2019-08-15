@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/philnguyen/json-type-provider.svg?branch=master)](https://travis-ci.org/philnguyen/json-type-provider)
+[![Build Status](https://travis-ci.com/philnguyen/json-type-provider.svg?branch=master)](https://travis-ci.com/philnguyen/json-type-provider)
 json-type-provider
 =========================================
 
