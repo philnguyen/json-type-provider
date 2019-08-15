@@ -57,7 +57,7 @@ simp-type-desc ::= JSNum
                 |  'null
                 |  id
                 |  list-type-desc
-                |  pat => type #:by expr
+                |  (pat => type #:by expr)
 
 list-type-desc ::= (List type-desc ...)
                 |  (Listof type-desc)
