@@ -65,3 +65,7 @@ Examples
 =========================================
 
 Examples are under [`test/`](https://github.com/philnguyen/json-type-provider/tree/master/json-type-provider/test) directory
+
+* [london_weather.rkt](https://github.com/philnguyen/json-type-provider/blob/master/json-type-provider/test/london_weather.rkt) shows a straightforward declaration
+* [complex.rkt](https://github.com/philnguyen/json-type-provider/blob/master/json-type-provider/test/complex.rkt) shows how to convert objects or lists into custom types
+* [cards.rkt](https://github.com/philnguyen/json-type-provider/blob/master/json-type-provider/test/cards.rkt) shows how to impose a more precise type (e.g. enumerations) on raw data
