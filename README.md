@@ -41,7 +41,7 @@ and optionally how it is mapped into a custom Racket type.
 
 Below is the full grammar:
 
-```
+```racket
 desc ::= obj-desc | type-desc
 
 type-desc ::= simp-type-desc | (U simp-type-desc ...)
