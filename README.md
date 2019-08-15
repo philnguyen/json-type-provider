@@ -31,10 +31,17 @@ Documentation
 
 (There will eventually be Scriblings)
 
+The `define-json-types` macro will define a type `id` and generate a parser `read-id`
+for each declared `id` type, whose RHS describes the shape of the data
+and optionally how it is mapped into a custom Racket type.
 ```racket
 (define-json-types
   [id type-desc] ...)
+```
 
+Below is the full grammar:
+
+```
 desc ::= obj-desc | type-desc
 
 type-desc ::= simp-type-desc | (U simp-type-desc ...)
