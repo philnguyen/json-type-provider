@@ -35,6 +35,8 @@ The `define-json-types` macro will define a type `id` and generate a parser `rea
 for each declared `id` type, whose RHS describes the shape of the data
 and optionally how it is mapped into a custom Racket type.
 ```racket
+(require json-comb)
+
 (define-json-types
   [id desc] ...)
 ```
@@ -58,6 +60,7 @@ simp-type-desc ::= JSNum
                 |  id
                 |  list-type-desc
                 |  (pat => type #:by expr)
+                |  ((Listof type-desc) => type #:by-folding expr #:from expr)
 
 list-type-desc ::= (List type-desc ...)
                 |  (Listof type-desc)

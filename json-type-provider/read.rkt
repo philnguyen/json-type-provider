@@ -14,6 +14,7 @@
  read-true
  read-false
  read-null
+ read-fold
  read-list
  read-list-rest
  read-empty-list
@@ -300,6 +301,28 @@
 ;;;;; Combinators for reading lists and objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(: read-fold (∀ (A) A (Input-Port A → A) → (Reader A)))
+(define ((read-fold acc read-acc) i [default bad-input])
+  (let ([ch (skip-whitespace i)])
+    (cond [(eqv? ch #\[) (read-byte i)
+                         ((read-fold-rest acc read-acc) i)]
+          [else (default i)])))
+
+(: read-fold-rest (∀ (A) A (Input-Port A → A) → Input-Port → A))
+(define ((read-fold-rest acc read-acc) i)
+  (define ch (skip-whitespace i))
+  (cond
+    [(eqv? #\] ch) (read-byte i)
+                   acc]
+    [else
+     (let loop : A ([acc : A (read-acc i acc)])
+          (define ch (skip-whitespace i))
+          (cond
+            [(eqv? ch #\]) (read-byte i)
+                           acc]
+            [(eqv? ch #\,) (read-byte i)
+                           (loop (read-acc i acc))]
+            [else (err i "error while parsing a list")]))]))
 
 (: read-list (∀ (A) (Input-Port → A) → (Reader (Listof A))))
 (define ((read-list read-one) i [default bad-input])

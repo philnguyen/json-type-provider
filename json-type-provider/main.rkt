@@ -60,7 +60,8 @@
     (pattern ((~literal quote) x) #:when (eq? (syntax-e #'x) 'null))
     (pattern _:id)
     (pattern _:lst)
-    (pattern (_:pat (~literal =>) _ #:by _:expr)))
+    (pattern (_:pat (~literal =>) _ #:by _:expr))
+    (pattern (((~literal Listof) _:type) (~literal =>) _ #:by-folding _:expr #:from _:expr)))
 
   (define-syntax-class obj
     #:description "object shape description"
@@ -130,6 +131,7 @@
         [((~literal quote) x) #:when (equal? (syntax-e #'x) 'null) #'null]
         [x:id #'x]
         [(_ (~literal =>) R #:by _) #'R]
+        [(_ (~literal =>) R #:by-folding _ #:from _) #'R]
         [((~and K (~or (~literal List) (~literal List*) (~literal Listof))) t ...)
          (with-syntax ([(R ...) (map go-type (syntax->list #'(t ...)))])
            #'(K R ...))]))
@@ -275,7 +277,11 @@
                                 [_ (bad-input i)]))]
                       [_ (default i)]))
                   (Reader (List* T1 T2 ... (Listof T*)))))]
-        [(p (~literal =>) T #:by e) (gen-parse-conv #'T #'p #'e)]))
+        [(p (~literal =>) T #:by e) (gen-parse-conv #'T #'p #'e)]
+        [(((~literal Listof) t) (~literal =>) R #:by-folding e #:from e₀)
+         (with-syntax ([read-t (gen-parse-def/type #'t)])
+           #'(let ([comb (ann e (t R → R))])
+               ((inst read-fold R) e₀ (λ (i acc) (comb (read-t i) acc)))))]))
     
     (syntax-parse t
       [((~literal U) b ... bₙ)
