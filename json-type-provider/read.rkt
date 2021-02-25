@@ -316,13 +316,13 @@
                    acc]
     [else
      (let loop : A ([acc : A (read-acc i acc)])
-          (define ch (skip-whitespace i))
-          (cond
-            [(eqv? ch #\]) (read-byte i)
-                           acc]
-            [(eqv? ch #\,) (read-byte i)
-                           (loop (read-acc i acc))]
-            [else (err i "error while parsing a list")]))]))
+       (define ch (skip-whitespace i))
+       (cond
+         [(eqv? ch #\]) (read-byte i)
+                        acc]
+         [(eqv? ch #\,) (read-byte i)
+                        (loop (read-acc i acc))]
+         [else (err i "error while parsing a list")]))]))
 
 (: read-list (∀ (A) (Input-Port → A) → (Reader (Listof A))))
 (define ((read-list read-one) i [default bad-input])
@@ -333,19 +333,7 @@
 
 (: read-list-rest (∀ (A) (Input-Port → A) → Input-Port → (Listof A)))
 (define ((read-list-rest read-one) i)
-  (define ch (skip-whitespace i))
-  (cond
-    [(eqv? #\] ch) (read-byte i)
-                   '()]
-    [else
-     (let loop : (Listof A) ([l (list (read-one i))])
-       (define ch (skip-whitespace i))
-       (cond
-         [(eqv? ch #\]) (read-byte i)
-                        (reverse l)]
-         [(eqv? ch #\,) (read-byte i)
-                        (loop (cons (read-one i) l))]
-         [else (err i "error while parsing a list")]))]))
+  (reverse (((inst read-fold-rest (Listof A)) '() (λ (i acc) (cons (read-one i) acc))) i)))
 
 (: read-empty-list (Reader Null))
 (define (read-empty-list i [default bad-input])
@@ -386,12 +374,11 @@
 
 (: skip-whitespace : Input-Port → (U Char EOF))
 (define (skip-whitespace i)
-  (let loop ()
-    (match (peek-char i)
-      [(and (? char?) (? char-whitespace?))
-       (read-char i)
-       (loop)]
-      [ch ch])))
+  (match (peek-char i)
+    [(and (? char?) (? char-whitespace?))
+     (read-char i)
+     (skip-whitespace i)]
+    [ch ch]))
 
 ;; Follows the specification (eg, at json.org) -- no extensions.
 (: err : Input-Port String Any * → Nothing)

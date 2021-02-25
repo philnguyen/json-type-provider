@@ -280,7 +280,7 @@
         [(p (~literal =>) T #:by e) (gen-parse-conv #'T #'p #'e)]
         [(((~literal Listof) t) (~literal =>) R #:by-folding e #:from e₀)
          (with-syntax ([read-t (gen-parse-def/type #'t)])
-           #'(let ([comb (ann e (t R → R))])
+           #'(let ([comb : (t R → R) e])
                ((inst read-fold R) e₀ (λ (i acc) (comb (read-t i) acc)))))]))
     
     (syntax-parse t
