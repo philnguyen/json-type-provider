@@ -301,27 +301,27 @@
 ;;;;; Combinators for reading lists and objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(: read-fold (∀ (A) A (Input-Port A → A) → (Reader A)))
-(define ((read-fold acc read-acc) i [default bad-input])
+(: read-fold (∀ (X A) A (X A → A) (Input-Port → X) → (Reader A)))
+(define ((read-fold a f read-one) i [default bad-input])
   (let ([ch (skip-whitespace i)])
     (cond [(eqv? ch #\[) (read-byte i)
-                         ((read-fold-rest acc read-acc) i)]
+                         ((read-fold-rest a f read-one) i)]
           [else (default i)])))
 
-(: read-fold-rest (∀ (A) A (Input-Port A → A) → Input-Port → A))
-(define ((read-fold-rest acc read-acc) i)
+(: read-fold-rest (∀ (X A) A (X A → A) (Input-Port → X) → Input-Port → A))
+(define ((read-fold-rest a f read-one) i)
   (define ch (skip-whitespace i))
   (cond
-    [(eqv? #\] ch) (read-byte i)
-                   acc]
+    [(eqv? ch #\]) (read-byte i)
+                   a]
     [else
-     (let loop : A ([acc : A (read-acc i acc)])
+     (let loop : A ([a : A (f (read-one i) a)])
        (define ch (skip-whitespace i))
        (cond
          [(eqv? ch #\]) (read-byte i)
-                        acc]
+                        a]
          [(eqv? ch #\,) (read-byte i)
-                        (loop (read-acc i acc))]
+                        (loop (f (read-one i) a))]
          [else (err i "error while parsing a list")]))]))
 
 (: read-list (∀ (A) (Input-Port → A) → (Reader (Listof A))))
@@ -333,7 +333,7 @@
 
 (: read-list-rest (∀ (A) (Input-Port → A) → Input-Port → (Listof A)))
 (define ((read-list-rest read-one) i)
-  (reverse (((inst read-fold-rest (Listof A)) '() (λ (i acc) (cons (read-one i) acc))) i)))
+  (reverse (((inst read-fold-rest A (Listof A)) '() cons read-one) i)))
 
 (: read-empty-list (Reader Null))
 (define (read-empty-list i [default bad-input])

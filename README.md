@@ -41,6 +41,15 @@ and optionally how it is mapped into a custom Racket type.
   [id desc] ...)
 ```
 
+It also provides a function
+```racket
+read-fold : (∀ (X A) A (X A → A) (Input-Port → X) → (∀ (B)
+                                                      (case->
+                                                        [Input-Port → A]
+                                                        [Input-Port (Input-Port → B) → (U A B)])))
+```
+that parses and folds a JSON list of `X`s into value `A` without building an intermediate Racket list.
+
 Below is the full grammar:
 
 ```racket
@@ -60,7 +69,6 @@ simp-type-desc ::= JSNum
                 |  id
                 |  list-type-desc
                 |  (pat => type #:by expr)
-                |  ((Listof type-desc) => type #:by-folding expr #:from expr)
 
 list-type-desc ::= (List type-desc ...)
                 |  (Listof type-desc)
