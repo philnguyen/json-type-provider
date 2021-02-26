@@ -41,15 +41,6 @@ and optionally how it is mapped into a custom Racket type.
   [id desc] ...)
 ```
 
-It also provides a function
-```racket
-read-fold : (∀ (X A) A (X A → A) (Input-Port → X) → (∀ (B)
-                                                      (case->
-                                                        [Input-Port → A]
-                                                        [Input-Port (Input-Port → B) → (U A B)])))
-```
-that parses and folds a JSON list of `X`s into value `A` without building an intermediate Racket list.
-
 Below is the full grammar:
 
 ```racket
@@ -94,4 +85,16 @@ field-name ::= id
             |  (id id)
 
 type = arbitrary Racket type
+```
+
+The libary also provides convenient functions over JSON lists:
+```racket
+;; Parse and fold a JSON list of `X`s into `A` without building an intermediate list
+read-fold : (∀ (X A) A (X A → A) (Input-Port → X) → (∀ (B)
+                                                      (case->
+                                                        [Input-Port → A]
+                                                        [Input-Port (Input-Port → B) → (U A B)])))
+                                                        
+;; Create a sequence of `X` without building an intermediate list
+make-sequence-reader : (∀ (X) (Input-Port → X) → Input-Port → (Sequenceof X))
 ```

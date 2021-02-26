@@ -50,18 +50,23 @@
  (read-Hand (open-input-file "cards.json"))
  res)
 
-;; Example of folding without intermediate list
+;; Examples of folding without intermediate list
+(define rank->int
+  (match-lambda
+    [(? exact-integer? n) n]
+    ['J 11]
+    ['Q 12]
+    ['K 13]
+    ['A 14]))
 (define read-Card-sum
   ((inst read-fold Card Integer) 0
-                                 (λ (card sum)
-                                   (define r (match (Card-rank card)
-                                               [(? integer? n) n]
-                                               ['J 11]
-                                               ['Q 12]
-                                               ['K 13]
-                                               ['A 14]))
-                                   (+ r sum))
+                                 (λ (card sum) (+ (rank->int (Card-rank card)) sum))
                                  read-Card))
 (check-equal?
  (read-Card-sum (open-input-file "cards.json"))
+ (+ 11 5 8 9 14))
+
+(check-equal?
+ (for/sum : Integer ([card : Card ((make-sequence-reader read-Card) (open-input-file "cards.json"))])
+   (rank->int (Card-rank card)))
  (+ 11 5 8 9 14))

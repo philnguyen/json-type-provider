@@ -2,7 +2,8 @@
 
 (provide define-json-types
          JSNum
-         read-fold)
+         read-fold
+         make-sequence-reader)
 
 (require racket/match
          json

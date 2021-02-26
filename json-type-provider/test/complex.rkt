@@ -27,3 +27,11 @@
     [((Coord x y) (cons sx sy)) (cons (+ x sx) (+ y sy))])
    read-Coord))
 (check-equal? (read-summary (open-input-file "complex.json")) (cons 10.0 11.0))
+
+(let-values ([(sx sy)
+              (for/fold ([sx : Float 0.0] [sy : Float 0.0])
+                        ([coord ((make-sequence-reader read-Coord) (open-input-file "complex.json"))])
+                (values (+ sx (Coord-x coord))
+                        (+ sy (Coord-y coord))))])
+  (check-equal? sx 10.0)
+  (check-equal? sy 11.0))

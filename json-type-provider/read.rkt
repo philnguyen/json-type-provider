@@ -19,13 +19,15 @@
  read-list-rest
  read-empty-list
  skip-json
+ make-sequence-reader
 
  skip-whitespace
  bad-input
  err
  )
 
-(require racket/match)
+(require racket/match
+         (only-in racket/sequence empty-sequence sequence-append))
 
 (require/typed syntax/readerr
   [raise-read-error
@@ -344,6 +346,31 @@
                                     '()]
                      [_ (bad-input i)])]
     [_ (default i)]))
+
+(: make-sequence-reader (∀ (X) (Input-Port → X) → Input-Port → (Sequenceof X)))
+(define ((make-sequence-reader read-one) i)
+  (let ([ch (skip-whitespace i)])
+    (cond [(eqv? ch #\[)
+           (read-byte i)
+           (let ([ch (skip-whitespace i)])
+             (cond
+               [(eqv? ch #\]) (read-byte i) empty-sequence]
+               [else
+                (sequence-append
+                 (in-value (read-one i))
+                 ((inst make-do-sequence (U Char EOF) X)
+                  (λ ()
+                    (values (λ _ (read-one i))
+                            (λ _ (skip-whitespace i))
+                            (skip-whitespace i)
+                            (λ (ch)
+                              (cond
+                                [(eqv? ch #\,) (read-byte i) #t]
+                                [(eqv? ch #\]) (read-byte i) #f]
+                                [else (err i "error white parsing a list")]))
+                            #f
+                            #f))))]))]
+          [else (err i "error while parsing a list")])))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
