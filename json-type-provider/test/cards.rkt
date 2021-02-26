@@ -35,7 +35,19 @@
                 [("diamond") '♦]
                 [("club") '♣]
                 [("spade") '♠]
-                [else (error 'Suit "got ~a" x)]))])
+                [else (error 'Suit "got ~a" x)]))]
+
+  [Rank-Sum ((Listof Card) => Integer
+                           #:by-folding
+                           (λ (card sum)
+                             (define r (match (Card-rank card)
+                                         [(? integer? n) n]
+                                         ['J 11]
+                                         ['Q 12]
+                                         ['K 13]
+                                         ['A 14]))
+                             (+ r sum))
+                           #:from 0)])
 
 (define res (list (Card 'J '♥) (Card 5 '♣) (Card 8 '♠) (Card 9 '♦) (Card 'A '♥)))
 (check-equal?
@@ -49,6 +61,10 @@
 (check-equal?
  (read-Hand (open-input-file "cards.json"))
  res)
+
+(check-equal?
+ (read-Rank-Sum (open-input-file "cards.json"))
+ (+ 11 5 8 9 14))
 
 ;; Examples of folding without intermediate list
 (define rank->int
